@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fst Scan Report - Temporal vs Tropical</title>
+  <style>
+    :root {
+      --bg: #f6f7f4;
+      --ink: #1d2520;
+      --muted: #5f685f;
+      --line: #d9ddd5;
+      --panel: #ffffff;
+      --green: #286f52;
+      --blue: #2e6693;
+      --orange: #c95f16;
+      --red: #ab2b3d;
+      --soft-green: #e4efe9;
+      --soft-blue: #e4edf5;
+      --shadow: 0 18px 46px rgba(29, 37, 32, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      overflow: hidden;
+    }
+
+    .deck {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      background:
+        linear-gradient(180deg, rgba(228, 239, 233, 0.75), rgba(246, 247, 244, 0.92)),
+        radial-gradient(circle at 10% 12%, rgba(46, 102, 147, 0.12), transparent 26%);
+    }
+
+    .slide {
+      display: none;
+      min-height: 100vh;
+      width: 100vw;
+      padding: 54px 72px 70px;
+      overflow: hidden;
+    }
+
+    .slide.active {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 20px;
+    }
+
+    .slide-header,
+    .slide-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 15px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .slide-footer {
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      letter-spacing: 0;
+      text-transform: none;
+      font-weight: 600;
+    }
+
+    .content {
+      min-height: 0;
+      display: grid;
+      align-content: center;
+      gap: 24px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(52px, 6vw, 94px);
+      line-height: 1.02;
+      letter-spacing: 0;
+      max-width: 1060px;
+    }
+
+    h2 {
+      font-size: clamp(38px, 4.5vw, 68px);
+      line-height: 1.08;
+      letter-spacing: 0;
+      max-width: 1120px;
+    }
+
+    h3 {
+      font-size: 24px;
+      line-height: 1.22;
+    }
+
+    .lede {
+      max-width: 880px;
+      font-size: 24px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .kicker {
+      color: var(--green);
+      font-size: 15px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid.two {
+      grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+      align-items: stretch;
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .stat,
+    .panel,
+    .callout {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 12px 30px rgba(29, 37, 32, 0.08);
+    }
+
+    .stat {
+      padding: 22px 22px 20px;
+      border-left: 6px solid var(--green);
+    }
+
+    .stat.blue {
+      border-left-color: var(--blue);
+    }
+
+    .stat.orange {
+      border-left-color: var(--orange);
+    }
+
+    .stat.red {
+      border-left-color: var(--red);
+    }
+
+    .stat .value {
+      font-size: clamp(34px, 4vw, 56px);
+      line-height: 1;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .stat .label {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .stat .note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.4;
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .panel p,
+    .panel li,
+    .callout p {
+      font-size: 20px;
+      line-height: 1.48;
+      color: var(--muted);
+    }
+
+    .panel ul {
+      margin: 14px 0 0;
+      padding-left: 22px;
+    }
+
+    .callout {
+      padding: 22px 24px;
+      background: var(--soft-green);
+      border-color: #bcd5c8;
+      box-shadow: none;
+    }
+
+    .figure-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      height: min(68vh, 720px);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      padding: 14px;
+    }
+
+    .figure-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .figure-caption {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.4;
+      text-align: center;
+      margin-top: -8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 18px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(29, 37, 32, 0.08);
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    th:first-child,
+    td:first-child,
+    th:nth-child(2),
+    td:nth-child(2) {
+      text-align: left;
+    }
+
+    th {
+      background: var(--soft-blue);
+      color: var(--ink);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      background: rgba(46, 102, 147, 0.1);
+      color: #1f526f;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+
+    .path-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .path-list code {
+      display: block;
+      padding: 12px 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .controls {
+      position: fixed;
+      right: 24px;
+      bottom: 20px;
+      display: flex;
+      gap: 8px;
+      z-index: 20;
+    }
+
+    .controls button {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      font-size: 22px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(29, 37, 32, 0.12);
+    }
+
+    .controls button:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .progress {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      height: 5px;
+      width: 100%;
+      background: rgba(29, 37, 32, 0.12);
+      z-index: 30;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--green), var(--blue), var(--orange));
+      transition: width 180ms ease;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .badge {
+      display: inline-grid;
+      place-items: center;
+      min-height: 32px;
+      border-radius: 999px;
+      background: var(--soft-blue);
+      color: #1f526f;
+      padding: 6px 14px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .badge.green {
+      background: var(--soft-green);
+      color: var(--green);
+    }
+
+    .badge.orange {
+      background: #f4e6d9;
+      color: #9a4b10;
+    }
+
+    @media (max-width: 900px) {
+      .slide {
+        padding: 32px 24px 74px;
+      }
+
+      .grid.two,
+      .grid.three,
+      .stat-grid {
+        grid-template-columns: 1fr;
+      }
+
+      body {
+        overflow: auto;
+      }
+
+      .deck {
+        min-height: 100vh;
+        height: auto;
+      }
+
+      .slide.active {
+        min-height: 100vh;
+      }
+
+      .figure-wrap {
+        height: auto;
+        min-height: 320px;
+      }
+
+      .figure-wrap img {
+        height: auto;
+      }
+
+      table {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" aria-live="polite">
+    <section class="slide active" data-title="Cover">
+      <div class="slide-header">
+        <span>Selection scan report</span>
+        <span>June 26, 2026</span>
+      </div>
+      <div class="content">
+        <p class="kicker">BGEM chromosome 10 Fst scan</p>
+        <h1>Filtered temporal versus filtered tropical maize lines</h1>
+        <p class="lede">A compact HTML slide report from the POPGEN <code>run-selection-scan</code> test: HCC vcftools output, local Fst visualization, and review gates before biological interpretation.</p>
+        <div class="badge-row">
+          <span class="badge green">vcftools Weir-Cockerham Fst</span>
+          <span class="badge">25 kb windows</span>
+          <span class="badge">5 kb step</span>
+          <span class="badge orange">Exploratory</span>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Input: chr10 VCF · 271 samples · 1,249,712 variants</span>
+        <span class="counter"></span>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Run design">
+      <div class="slide-header">
+        <span>Inputs and checks</span>
+        <span>Sample sets matched before scan</span>
+      </div>
+      <div class="content">
+        <h2>What was scanned</h2>
+        <div class="stat-grid">
+          <div class="stat blue">
+            <div class="value">271</div>
+            <div class="label">VCF samples</div>
+            <div class="note">Header sample count in the chromosome 10 test VCF.</div>
+          </div>
+          <div class="stat green">
+            <div class="value">124</div>
+            <div class="label">Temporal IDs</div>
+            <div class="note">124/124 present in the VCF after filtering.</div>
+          </div>
+          <div class="stat orange">
+            <div class="value">53</div>
+            <div class="label">Tropical IDs</div>
+            <div class="note">53/53 present in the VCF after filtering.</div>
+          </div>
+          <div class="stat red">
+            <div class="value">177</div>
+            <div class="label">Kept in scan</div>
+            <div class="note">vcftools retained the two comparison groups.</div>
+          </div>
+        </div>
+        <div class="callout">
+          <p>The raw HCC Fst result is preserved; the displayed figure uses the negative-clamped companion file for visualization only.</p>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Groups: <code>filtered_temporal.txt</code> versus <code>filtered_tropical.txt</code></span>
+        <span class="counter"></span>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Scan settings">
+      <div class="slide-header">
+        <span>Method</span>
+        <span>vcftools/0.1 on HCC</span>
+      </div>
+      <div class="content">
+        <h2>Scan parameters and checkpoints</h2>
+        <div class="grid two">
+          <div class="panel">
+            <h3>Command pattern</h3>
+            <ul>
+              <li><code>--weir-fst-pop filtered_temporal.txt</code></li>
+              <li><code>--weir-fst-pop filtered_tropical.txt</code></li>
+              <li><code>--fst-window-size 25000</code></li>
+              <li><code>--fst-window-step 5000</code></li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Result summary</h3>
+            <ul>
+              <li>29,557 windows plotted.</li>
+              <li>Global mean Fst: <code>0.082102</code>.</li>
+              <li>Global weighted Fst: <code>0.10103</code>.</li>
+              <li>99th percentile threshold: <code>0.36074132</code>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Primary display statistic: <code>WEIGHTED_FST</code></span>
+        <span class="counter"></span>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Fst Manhattan plot">
+      <div class="slide-header">
+        <span>Genome-wide view within chromosome 10</span>
+        <span>Top 1% highlighted</span>
+      </div>
+      <div class="content">
+        <div class="figure-wrap">
+          <img src="assets/fst_manhattan.png" alt="Manhattan-style plot of windowed weighted Fst across chromosome 10">
+        </div>
+        <p class="figure-caption">Window midpoint positions are shown in Mb. Orange points are windows at or above the 99th percentile of weighted Fst.</p>
+      </div>
+      <div class="slide-footer">
+        <span>Figure: <code>graphs/fst_scan/*_fst_manhattan.png</code></span>
+        <span class="counter"></span>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Top region zoom">
+      <div class="slide-header">
+        <span>Highest-scoring local region</span>
+        <span>chr10: 76.27-76.30 Mb</span>
+      </div>
+      <div class="content">
+        <div class="figure-wrap">
+          <img src="assets/fst_top_region_zoom.png" alt="Zoomed line plot around the highest weighted Fst window on chromosome 10">
+        </div>
+        <p class="figure-caption">The top window is chr10:76,270,001-76,295,000 with weighted Fst 0.546364.</p>
+      </div>
+      <div class="slide-footer">
+        <span>Local context: +/- 2 Mb around the strongest window</span>
+        <span class="counter"></span>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Top windows">
+      <div class="slide-header">
+        <span>Top weighted-Fst windows</span>
+        <span>Window table</span>
+      </div>
+      <div class="content">
+        <h2>Highest windows cluster near 76.2-76.7 Mb</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Region</th>
+              <th>N variants</th>
+              <th>Weighted Fst</th>
+              <th>Mean Fst</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>chr10:76,270,001-76,295,000</td><td>69</td><td>0.546364</td><td>0.434249</td></tr>
+            <tr><td>2</td><td>chr10:76,660,001-76,685,000</td><td>106</td><td>0.538913</td><td>0.361602</td></tr>
+            <tr><td>3</td><td>chr10:76,225,001-76,250,000</td><td>85</td><td>0.538140</td><td>0.427704</td></tr>
+            <tr><td>4</td><td>chr10:147,225,001-147,250,000</td><td>158</td><td>0.537339</td><td>0.467090</td></tr>
+            <tr><td>5</td><td>chr10:76,335,001-76,360,000</td><td>47</td><td>0.534984</td><td>0.434181</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="slide-footer">
+        <span>Full table: <code>graphs/fst_scan/*_top_windows.tsv</code></span>
+        <span class="counter"></span>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Interpretation guardrails">
+      <div class="slide-header">
+        <span>Review gates</span>
+        <span>Do not overinterpret yet</span>
+      </div>
+      <div class="content">
+        <h2>What this report does and does not claim</h2>
+        <div class="grid three">
+          <div class="panel">
+            <h3>It confirms</h3>
+            <p>The skill can run a focused HCC Fst scan, preserve raw output, create a clamped display copy, and generate a reviewable figure set.</p>
+          </div>
+          <div class="panel">
+            <h3>It suggests</h3>
+            <p>Several high-Fst windows are concentrated around 76.2-76.7 Mb on chr10, with additional signals including around 40.9 Mb and 147.2 Mb.</p>
+          </div>
+          <div class="panel">
+            <h3>It still needs</h3>
+            <p>Genome-wide context, LD/XP-CLR comparison, sample structure checks, annotation, and human review before biological interpretation.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Status: exploratory skill test output</span>
+        <span class="counter"></span>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Files">
+      <div class="slide-header">
+        <span>Reproducibility</span>
+        <span>Local artifacts</span>
+      </div>
+      <div class="content">
+        <h2>Where the artifacts live</h2>
+        <div class="path-list">
+          <code>cache/run-selection-scan-popgen-test/popgen_chr10_filtered_temporal_vs_filtered_tropical_25kb_5kb.windowed.weir.fst</code>
+          <code>cache/run-selection-scan-popgen-test/popgen_chr10_filtered_temporal_vs_filtered_tropical_25kb_5kb.windowed_fixed.weir.fst</code>
+          <code>scripts/visualize_fst_result.py</code>
+          <code>graphs/fst_scan/popgen_chr10_filtered_temporal_vs_filtered_tropical_25kb_5kb_fst_manhattan.png</code>
+          <code>reports/fst-scan-slides/index.html</code>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Report generated from downloaded HCC result</span>
+        <span class="counter"></span>
+      </div>
+    </section>
+  </main>
+
+  <div class="controls" aria-label="Slide controls">
+    <button type="button" id="prev" aria-label="Previous slide">&lt;</button>
+    <button type="button" id="next" aria-label="Next slide">&gt;</button>
+  </div>
+  <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const counters = Array.from(document.querySelectorAll('.counter'));
+    const progress = document.getElementById('progress-bar');
+    let current = 0;
+
+    function render() {
+      slides.forEach((slide, index) => {
+        slide.classList.toggle('active', index === current);
+      });
+      counters.forEach((counter) => {
+        counter.textContent = `${current + 1} / ${slides.length}`;
+      });
+      progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+      document.title = `${slides[current].dataset.title} - Fst Scan Report`;
+    }
+
+    function go(delta) {
+      current = Math.min(slides.length - 1, Math.max(0, current + delta));
+      render();
+    }
+
+    document.getElementById('prev').addEventListener('click', () => go(-1));
+    document.getElementById('next').addEventListener('click', () => go(1));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+        go(1);
+      }
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+        go(-1);
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

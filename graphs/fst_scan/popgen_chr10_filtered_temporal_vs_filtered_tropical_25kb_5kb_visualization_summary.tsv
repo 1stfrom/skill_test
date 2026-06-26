@@ -1,0 +1,12 @@
+metric	value
+windows_plotted	29557
+value_column	WEIGHTED_FST
+threshold_quantile	0.99
+threshold_value	0.36074131999999964
+mean_value	0.09677404911617883
+min_value	0.0
+max_value	0.546364
+top_window_chrom	10
+top_window_start	76270001
+top_window_end	76295000
+top_window_value	0.546364

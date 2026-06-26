@@ -1,0 +1,11 @@
+{
+  "name": "ai-template-memory-site",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lightweight Node.js website for project memory and research logs.",
+  "scripts": {
+    "check": "python3 scripts/doctor.py",
+    "doctor": "python3 scripts/doctor.py",
+    "start": "node server.js"
+  }
+}

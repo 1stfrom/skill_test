@@ -1,0 +1,135 @@
+---
+title: "Wright-Fisher Simulation with Selection and Drift"
+output: html_document
+date: "2026-02-06"
+author: "Jinliang Yang"
+coding_tool: "Codex"
+model: "GPT-5"
+reviewer: "Jinliang Yang"
+review_status: "Human reviewed"
+---
+
+# Wright-Fisher simulation with selection and drift
+
+## Purpose
+
+This document defines a reusable Wright-Fisher simulation function for allele-frequency change under selection and drift in a diploid population.
+
+The main goal is to keep the method readable, reproducible, and easy to adapt for later simulation studies. The code below is written as a template: first explain what the code is doing, then define parameters, and only then provide the implementation.
+
+## Relative path setup
+
+This setup chunk makes the document run relative to the project root instead of depending on the current working directory in the R session.
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE
+)
+
+current_input_dir <- normalizePath(
+  dirname(knitr::current_input(dir = TRUE)),
+  winslash = "/",
+  mustWork = TRUE
+)
+
+project_root <- normalizePath(
+  file.path(current_input_dir, ".."),
+  winslash = "/",
+  mustWork = TRUE
+)
+
+knitr::opts_knit$set(root.dir = project_root)
+```
+
+## Method overview
+
+We simulate allele-frequency trajectories across generations under a Wright-Fisher model with viability selection.
+
+At each generation, the workflow is:
+
+1. compute genotype frequencies under Hardy-Weinberg expectations from the current allele frequency
+2. apply genotype fitness values to obtain the post-selection allele frequency
+3. sample the next generation by binomial drift using `2 * Ne` gene copies
+
+This template is useful when you want a compact simulation function that is still explicit enough for human review.
+
+## Parameters
+
+The simulation function uses the following parameters.
+
+- `p0`: initial allele frequency of the focal allele
+- `Ne`: effective population size for a diploid population
+- `s`: selection coefficient for the homozygous focal genotype relative to the reference homozygote
+- `gens`: number of generations to simulate
+- `h`: dominance coefficient, where `h = 0.5` gives an additive heterozygote effect
+
+## Code
+
+The code chunk below implements the simulation function described above.
+
+```{r wf-sel-drift-function}
+wf_sel_drift <- function(p0, Ne, s, gens = 60, h = 0.5) {
+  # p0: initial allele frequency of allele A
+  # Ne: effective population size in a diploid population
+  # s: selection coefficient for AA relative to aa
+  # gens: number of generations to simulate
+  # h: dominance coefficient for Aa, where fitness is 1 + h * s
+
+  p <- numeric(gens + 1)
+  p[1] <- p0
+
+  for (t in seq_len(gens)) {
+    pt <- p[t]
+
+    # Genotype frequencies before selection.
+    pAA <- pt^2
+    pAa <- 2 * pt * (1 - pt)
+    paa <- (1 - pt)^2
+
+    # Relative fitness values.
+    wAA <- 1 + s
+    wAa <- 1 + h * s
+    waa <- 1
+
+    # Mean fitness after weighting genotype frequencies.
+    wbar <- pAA * wAA + pAa * wAa + paa * waa
+
+    # Allele frequency after selection and before drift.
+    p_sel <- (pAA * wAA + 0.5 * pAa * wAa) / wbar
+
+    # Random genetic drift from binomial sampling of 2Ne gene copies.
+    k <- rbinom(n = 1, size = 2 * Ne, prob = p_sel)
+    p[t + 1] <- k / (2 * Ne)
+  }
+
+  p
+}
+```
+
+## Example usage
+
+This chunk gives a minimal example for testing the function.
+
+```{r example-usage}
+example_traj <- wf_sel_drift(
+  p0 = 0.1,
+  Ne = 100,
+  s = 0.05,
+  gens = 60,
+  h = 0.5
+)
+
+head(example_traj)
+```
+
+## Notes for adaptation
+
+When adapting this template for another analysis, keep the same order:
+
+1. document the purpose in plain language
+2. define reproducible path handling
+3. explain parameters before the code chunk
+4. keep a short runnable example for smoke testing

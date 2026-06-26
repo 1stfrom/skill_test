@@ -1,0 +1,2 @@
+# Python dependencies for project-specific analysis go here.
+# The template smoke-test scripts use only the Python standard library.
