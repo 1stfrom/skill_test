@@ -1,0 +1,28 @@
+
+Lmod is automatically replacing "perl/5.26" with "vcftools/0.1".
+
+
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf largedata/SNP/hmp321_282_agpv5_maf005_miss03_chr10.recode.vcf
+	--fst-window-size 25000
+	--fst-window-step 5000
+	--weir-fst-pop largedata/SNP/filtered_temporal.txt
+	--weir-fst-pop largedata/SNP/filtered_tropical.txt
+	--keep largedata/SNP/filtered_temporal.txt
+	--keep largedata/SNP/filtered_tropical.txt
+	--out cache/run-selection-scan-282-fst-chr10/run_20260626_111642_retry/temporal_vs_tropical_chr10_25kb5kb
+
+Warning: Expected at least 2 parts in INFO entry: ID=PR,Number=0,Type=Flag,Description="Provisional reference allele, may not be based on real reference genome">
+Keeping individuals in 'keep' list
+After filtering, kept 177 out of 271 Individuals
+Outputting Windowed Weir and Cockerham Fst estimates.
+Weir and Cockerham mean Fst estimate: 0.082102
+Weir and Cockerham weighted Fst estimate: 0.10103
+After filtering, kept 1249712 out of a possible 1249712 Sites
+Run Time = 34.00 seconds
+  File "<stdin>", line 9
+    .  for row in reader:
+IndentationError: unexpected indent

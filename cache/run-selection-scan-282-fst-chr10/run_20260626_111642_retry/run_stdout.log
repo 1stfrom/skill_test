@@ -1,0 +1,26 @@
+=== Fst selection scan for hmp321_282 chr10 ===
+start_time=2026-06-26T11:16:42-05:00
+project_path=/mnt/nrdstor/jyanglab/nathanma/projects/skill_test
+host=c2736.swan.hcc.unl.edu
+slurm_job_id=16220886
+outdir=cache/run-selection-scan-282-fst-chr10/run_20260626_111642_retry
+vcf=largedata/SNP/hmp321_282_agpv5_maf005_miss03_chr10.recode.vcf
+pop_a_temporal=largedata/SNP/filtered_temporal.txt
+pop_b_tropical=largedata/SNP/filtered_tropical.txt
+window_bp=25000
+step_bp=5000
+vcftools_path=/util/opt/anaconda/deployed-conda-envs/packages/vcftools/envs/vcftools-0.1.16/bin/vcftools
+loaded_modules=compiler/gcc/11:openmpi/4.1:python/3.9:git/2.39:nano/5.7:swan:vcftools/0.1
+vcf_samples=271
+first_variant_chrom=10
+first_variant_pos=16257
+chr10_length_bp=152435371
+group_a_temporal_requested=124
+group_a_temporal_present_in_vcf=124
+group_b_tropical_requested=53
+group_b_tropical_present_in_vcf=53
+Counting SNPs in VCF for checkpoint...
+total_snps=1249712
+chr10_snps=1249712
+Running vcftools Fst scan...
+Summarizing Fst windows...

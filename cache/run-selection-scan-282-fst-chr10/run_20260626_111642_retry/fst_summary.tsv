@@ -1,0 +1,7 @@
+metric	value
+window_rows_with_numeric_weighted_fst	29557
+mean_weighted_fst	0.0967426
+p99_weighted_fst	0.360897
+max_weighted_fst	0.546364
+max_window	10:76270001-76295000
+max_window_n_variants	69

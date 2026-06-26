@@ -1,0 +1,26 @@
+metric	value	note
+run_start	2026-06-26T11:16:46-05:00	HCC run start time
+project_path	/mnt/nrdstor/jyanglab/nathanma/projects/skill_test	HCC project checkout
+host	c2736.swan.hcc.unl.edu	Slurm compute host
+slurm_job_id	16220886	Active allocation used for compute
+vcf	largedata/SNP/hmp321_282_agpv5_maf005_miss03_chr10.recode.vcf	Input genotype-called VCF
+chromosome	10	Only chr10 VCF was available in largedata
+chr10_length_bp	152435371	From chr_length_V5.txt
+vcf_samples	271	Samples in #CHROM header
+first_variant_chrom	10	VCF chromosome naming check
+first_variant_pos	16257	First observed variant position
+group_a_name	temporal	Fst pop A
+group_a_file	largedata/SNP/filtered_temporal.txt	Filtered list used
+group_a_requested	124	Non-comment nonblank IDs
+group_a_present_in_vcf	124	IDs matching VCF sample header
+group_b_name	tropical	Fst pop B
+group_b_file	largedata/SNP/filtered_tropical.txt	Filtered list used
+group_b_requested	53	Non-comment nonblank IDs
+group_b_present_in_vcf	53	IDs matching VCF sample header
+total_snps	1249712	Non-header VCF rows
+chr10_snps	1249712	Non-header VCF rows with CHROM=10
+window_size_bp	25000	vcftools --fst-window-size
+window_step_bp	5000	vcftools --fst-window-step
+vcftools_module	vcftools/0.1	module load vcftools/0.1
+vcftools_path	/util/opt/anaconda/deployed-conda-envs/packages/vcftools/envs/vcftools-0.1.16/bin/vcftools	Executable used
+output_prefix	cache/run-selection-scan-282-fst-chr10/run_20260626_111642_retry/temporal_vs_tropical_chr10_25kb5kb	Raw vcftools prefix

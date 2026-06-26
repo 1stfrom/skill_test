@@ -22,6 +22,7 @@ Check here first to understand where the maize phenomics-assisted genomic select
 - Added `profiling/1.pheno/06_vi_agronomic_correlation_qc.Rmd` to test within-nitrogen genotype-level VI x agronomic trait correlations against a genotype-shuffled null.
 - Completed the first HCC genotype-only GBLUP baseline job (`15826155`) under `R/4.3`; summary report is in `reports/07_baseline_gblup_hcc_summary.md` with a standalone HTML rendering at `reports/07_baseline_gblup_hcc_summary.html`.
 - Added an HTML slide-deck version of the baseline GBLUP report at `reports/baseline-gblup-slides/index.html`, served from the dashboard as `/slides/baseline-gblup/`.
+- Ran the HCC chr10 Fst selection scan for the `hmp321_282` genotype resource using filtered temporal versus filtered tropical groups; outputs and checkpoint summaries are under `/mnt/nrdstor/jyanglab/nathanma/projects/skill_test/cache/run-selection-scan-282-fst-chr10/run_20260626_111642_retry/`.
 
 ## In Progress
 
@@ -40,6 +41,7 @@ Check here first to understand where the maize phenomics-assisted genomic select
 6. Decide which VI traits, temporal feature representation, missing-date handling rule, and redundancy-pruning threshold should be retained for model-ready phenomics features.
 7. Compare genotype-only, phenomics-only, and combined prediction models using agreed validation splits, with the HCC GBLUP baseline as the first reference.
 8. Review preliminary results with the project lead before final manuscript claims.
+9. For a genome-wide 282-population selection scan, stage chr1-9 VCFs or a whole-genome VCF in HCC `largedata/`, then rerun the Fst workflow across all chromosomes.
 
 ## Open Questions
 
